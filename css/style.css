@@ -1,0 +1,392 @@
+/* ==========================================================================
+   1. VARIÁVEIS NATIVAS (Design Tokens)
+   Funciona como um arquivo de ".env" para o seu visual. Mudou aqui, muda no site todo.
+   ========================================================================== */
+/* No topo do style.css, atualize o :root */
+:root {
+    --cor-primaria: #9F1C20;
+    --cor-secundaria: #1D4A6C;
+    --cor-escura: #142349;
+    --cor-fundo-site: #f0f2f5;
+    --cor-fundo-header: #ffffff;
+    --cor-texto: #333333;
+    --cor-borda: #cccccc;
+    --fonte-padrao: 'Segoe UI', system-ui, sans-serif;
+
+    /* Transição suave para o Dark Mode */
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* 2. DEFINIÇÃO DO TEMA ESCURO (Dark Mode) */
+body.dark-mode {
+    --cor-fundo-site: #121212;
+    --cor-fundo-header: #1e1e1e;
+    --cor-texto: #e0e0e0;
+    --cor-borda: #444444;
+    --cor-escura: #0a1128;
+}
+
+/* Estilos específicos para inputs no modo escuro */
+body.dark-mode .item-copia input {
+    background: #252525;
+    color: #fff;
+}
+
+body.dark-mode .item-copia .btn-copiar {
+    background: #333;
+    color: #fff;
+    border-left: 1px solid #444;
+}
+
+/* 3. ESTILOS DO TOAST (Notificação) */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    background: #333;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    font-size: 14px;
+    font-weight: 500;
+    /* Animação de entrada */
+    opacity: 0;
+    transform: translateX(100px);
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast.success {
+    border-left: 4px solid #28a745;
+}
+
+.toast.error {
+    border-left: 4px solid #dc3545;
+}
+
+/* ==========================================================================
+   2. RESET E BASE
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    /* Fundamental: impede que bordas e paddings quebrem a largura dos elementos */
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--fonte-padrao);
+    background-color: var(--cor-fundo-site);
+    color: var(--cor-texto);
+}
+
+/* ==========================================================================
+   3. HEADER E NAVEGAÇÃO
+   ========================================================================== */
+.header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Joga o logo pra esquerda e o menu pra direita */
+    padding: 15px 40px;
+    background: var(--cor-fundo-header);
+    border-bottom: 3px solid var(--cor-escura);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra sutil para dar profundidade */
+}
+
+.logo {
+    height: 45px;
+    /* Controlar altura é mais seguro do que largura em logos */
+}
+
+.header-menu {
+    display: flex;
+    gap: 25px;
+    list-style: none;
+}
+
+.header-menu a {
+    text-decoration: none;
+    font-size: 1.1em;
+    color: var(--cor-texto);
+    font-weight: 600;
+    transition: color 0.2s ease;
+    /* Animação suave ao passar o mouse */
+}
+
+.header-menu a:hover {
+    color: var(--cor-primaria);
+}
+
+/* ==========================================================================
+   4. ESTRUTURA PRINCIPAL (MAIN E GRID)
+   ========================================================================== */
+.tratativas {
+    max-width: 1400px;
+    margin: 40px auto;
+    /* Centraliza a aplicação na tela */
+    padding: 0 20px;
+
+    /* O Grid moderno permite colocar os botões em cima e as colunas lado a lado facilmente */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+/* ==========================================================================
+   5. BOTÕES DE AÇÃO SUPERIORES
+   ========================================================================== */
+.tratativas-acoes {
+    grid-column: 1 / -1;
+    /* Força essa div a ocupar as duas colunas do grid */
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.tratativas-acoes button {
+    padding: 12px 25px;
+    font-size: 1em;
+    font-weight: bold;
+    color: #fff;
+    background-color: var(--cor-escura);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.tratativas-acoes button:hover {
+    background-color: #2a3d75;
+}
+
+.tratativas-acoes button:active {
+    transform: scale(0.97);
+    /* Efeito tátil de clique */
+}
+
+/* ==========================================================================
+   6. BLOCOS DE TRATATIVAS (Vermelho e Azul)
+   ========================================================================== */
+.tratativas-clientes,
+.tratativas-curtas {
+    padding: 30px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    /* Espaço entre cada input de cópia */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.tratativas-clientes {
+    background-color: var(--cor-primaria);
+}
+
+.tratativas-curtas {
+    background-color: var(--cor-secundaria);
+}
+
+/* ==========================================================================
+   7. COMPONENTE DE INPUT E CÓPIA (O "item-copia" do HTML)
+   ========================================================================== */
+.item-copia {
+    display: flex;
+    background: #ffffff;
+    border-radius: 6px;
+    overflow: hidden;
+    /* Impede que o botão ou input vazem pelas bordas arredondadas */
+}
+
+.item-copia input {
+    flex: 1;
+    /* Faz o input ocupar todo o espaço restante */
+    padding: 14px 15px;
+    border: none;
+    outline: none;
+    font-size: 0.95em;
+    color: var(--cor-texto);
+    background: #fafafa;
+}
+
+.item-copia .btn-copiar {
+    padding: 0 25px;
+    border: none;
+    background: #e0e0e0;
+    color: var(--cor-texto);
+    font-weight: bold;
+    cursor: pointer;
+    border-left: 1px solid var(--cor-borda);
+    transition: background 0.2s;
+}
+
+.item-copia .btn-copiar:hover {
+    background: #d0d0d0;
+}
+
+/* Editar.html */
+.painel-admin {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.secao-admin {
+    margin-bottom: 40px;
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+}
+
+.linha-edicao {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    align-items: center;
+}
+
+.linha-edicao input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.id-label {
+    width: 50px;
+    padding: 12px;
+    background: #f4f4f4;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.btn-adicionar {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.btn-remover {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-salvar {
+    display: block;
+    width: 100%;
+    padding: 20px;
+    background: #1D4A6C;
+    color: white;
+    font-size: 1.3em;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-salvar:hover {
+    background: #142349;
+}
+
+h2 {
+    color: #9F1C20;
+    margin-bottom: 5px;
+}
+
+p {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+/* ==========================================================================
+   8. MODO ESCURO: PAINEL ADMIN (editar.html)
+   ========================================================================== */
+body.dark-mode .painel-admin {
+    background: #1e1e1e;
+    /* Fundo escuro para a caixa principal */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    /* Sombra mais densa */
+}
+
+body.dark-mode .secao-admin {
+    border: 1px solid #444;
+    /* Borda mais escura para não ofuscar */
+}
+
+body.dark-mode .linha-edicao input {
+    background: #252525;
+    color: #ffffff;
+    border: 1px solid #444;
+}
+
+body.dark-mode .linha-edicao input::placeholder {
+    color: #888;
+    /* Deixa o texto de "Digite a mensagem..." mais sutil */
+}
+
+body.dark-mode .id-label {
+    background: #333333;
+    color: #e0e0e0;
+    border: 1px solid #444;
+}
+
+body.dark-mode p {
+    color: #bbbbbb;
+    /* Texto descritivo mais claro para dar contraste com fundo preto */
+}
+
+body.dark-mode h1 {
+    color: #e0e0e0;
+    /* Título principal claro */
+}
+
+body.dark-mode h2 {
+    color: #ff6b6b;
+    /* Um vermelho mais claro/vibrante para destacar no fundo escuro */
+}
+
+/* ==========================================================================
+   8. (gerar.html)
+   ========================================================================== */
+
+textarea {
+    width: 100%;
+    height: 220px;
+    margin-top: 15px;
+}
+
+.geral {
+    margin-left: 2rem;
+}

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Dados - Monitoração</title>
+    <link rel="stylesheet" href="css/style.css">
+    
+</head>
+<body>
+    <header class="header">
+        <img class="logo"
+            src="https://i0.wp.com/finnet.com.br/wp-content/uploads/2021/09/logo_degradepng-01-3.png?fit=1024%2C255&ssl=1"
+            alt="Logo">
+
+        <ul class="header-menu">
+            <!-- <li><a href="index.html">Inicio</a></li>
+            <li><a href="links.html">Links</a></li> -->
+            <li><a href="index.html">Tratativas</a></li>
+            <li><a href="gerador.html">Log</a></li>
+            <!-- <li><a href="editar.html">Editar</a></li> -->
+            <button id="btn-tema" title="Alternar Tema">🌙</button>
+        </ul>
+    </header>
+
+    <div class="painel-admin">
+        <h1>Painel de Controle de Dados</h1>
+        <p>Altere, adicione ou remova itens. Ao finalizar, clique em gerar arquivo e substitua o <b>scripts/dados.js</b> original.</p>
+
+        <div class="secao-admin">
+            <h2>1. Tratativas Curtas</h2>
+            <button class="btn-adicionar" onclick="adicionarLinha('container-curtas')">+ Novo Item (Curta)</button>
+            <div id="container-curtas"></div>
+        </div>
+
+        <div class="secao-admin">
+            <h2>2. Mensagens Desconsiderar (Clientes)</h2>
+            <button class="btn-adicionar" onclick="adicionarLinha('container-clientes')">+ Novo Item (Cliente)</button>
+            <div id="container-clientes"></div>
+        </div>
+
+        <button class="btn-salvar" id="btn-exportar">GERAR ARQUIVO DADOS.JS</button>
+    </div>
+
+    <script type="text/javascript" src="scripts/dados.js"></script>
+    <script type="text/javascript" src="scripts/scripts.js"></script>
+
+    <script>
+        // Função para criar o HTML da linha de edição
+        function criarTemplateLinha(id, texto, containerId) {
+            return `
+                <div class="linha-edicao" data-id="${id}">
+                    <span class="id-label">${id}</span>
+                    <input type="text" class="input-texto" value="${texto}" placeholder="Digite a mensagem aqui...">
+                    <button class="btn-remover" onclick="this.parentElement.remove()">✕</button>
+                </div>
+            `;
+        }
+
+        // Função para carregar os dados iniciais do dados.js
+        function inicializarPainel() {
+            const containerCurtas = document.getElementById('container-curtas');
+            const containerClientes = document.getElementById('container-clientes');
+
+            // Renderiza tratativasCurtas
+            Object.entries(tratativasCurtas).forEach(([id, texto]) => {
+                containerCurtas.innerHTML += criarTemplateLinha(id, texto, 'container-curtas');
+            });
+
+            // Renderiza mensagensDesconsiderar
+            Object.entries(mensagensDesconsiderar).forEach(([id, texto]) => {
+                containerClientes.innerHTML += criarTemplateLinha(id, texto, 'container-clientes');
+            });
+        }
+
+        // Função para adicionar nova linha vazia
+        function adicionarLinha(containerId) {
+            const container = document.getElementById(containerId);
+            // Calcula o próximo ID baseado no número de linhas atuais + 1
+            const proximoId = container.querySelectorAll('.linha-edicao').length + 1;
+            const novaLinha = criarTemplateLinha(proximoId, "", containerId);
+            
+            // Adiciona ao final do container
+            const div = document.createElement('div');
+            div.innerHTML = novaLinha;
+            container.appendChild(div.firstElementChild);
+        }
+
+        // Função para coletar dados e baixar o arquivo
+        document.getElementById('btn-exportar').addEventListener('click', () => {
+            
+            const processarContainer = (containerId) => {
+                const dados = {};
+                const linhas = document.querySelectorAll(`#${containerId} .linha-edicao`);
+                linhas.forEach((linha, index) => {
+                    const texto = linha.querySelector('.input-texto').value;
+                    // Reatribui IDs em sequência para evitar buracos se algum for removido
+                    dados[index + 1] = texto;
+                });
+                return dados;
+            };
+
+            const novosDadosCurtas = processarContainer('container-curtas');
+            const novosDadosClientes = processarContainer('container-clientes');
+
+            // Reconstrói a estrutura do arquivo dados.js com identação de 4 espaços
+            let conteudoFinal = `const tratativasCurtas = ${JSON.stringify(novosDadosCurtas, null, 4)};\n\n`;
+            conteudoFinal += `const mensagensDesconsiderar = ${JSON.stringify(novosDadosClientes, null, 4)};`;
+
+            // Processo de Download
+            const blob = new Blob([conteudoFinal], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dados.js';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert("Sucesso! O novo arquivo 'dados.js' foi baixado.\n\nSubstitua o arquivo antigo na pasta 'scripts' para aplicar as mudanças.");
+        });
+
+        // Inicia o painel ao carregar a página
+        document.addEventListener('DOMContentLoaded', inicializarPainel);
+    </script>
+</body>
+</html>

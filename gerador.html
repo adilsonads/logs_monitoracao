@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Gerador de Logs</title>
+
+</head>
+
+<body>
+    <header class="header">
+        <img class="logo"
+            src="https://i0.wp.com/finnet.com.br/wp-content/uploads/2021/09/logo_degradepng-01-3.png?fit=1024%2C255&ssl=1"
+            alt="Logo">
+
+        <ul class="header-menu">
+            <!-- <li><a href="index.html">Inicio</a></li>
+            <li><a href="links.html">Links</a></li> -->
+            <li><a href="index.html">Tratativas</a></li>
+            <li><a href="gerador.html">Log</a></li>
+            <!-- <li><a href="editar.html">Editar</a></li> -->
+            <button id="btn-tema" title="Alternar Tema">🌙</button>
+        </ul>
+    </header>
+    <div class="geral">
+        <!-- <h2>Gerador de Logs</h2> -->
+
+        <label>Data:</label><br>
+        <input type="date" id="data"><br>
+
+        <label>Arquivo:</label><br>
+        <input type="text" id="arquivo"><br>
+
+        <label>CorrelationId:</label><br>
+        <input type="text" id="correlation"><br>
+
+        <button onclick="gerar()">Abrir Logs</button>
+    </div>
+    <script>
+
+        function formatarData(data) {
+            if (!data) return null;
+
+            // quebra o formato YYYY-MM-DD
+            const partes = data.split("-");
+            if (partes.length !== 3) return null;
+
+            const ano = partes[0];
+            const mes = partes[1];
+            const dia = partes[2];
+
+            // monta direto sem usar Date()
+            return encodeURIComponent(`${dia}/${mes}/${ano}`);
+        }
+
+        function gerar() {
+            let dataInput = document.getElementById("data").value;
+            let arquivo = document.getElementById("arquivo").value.trim();
+            let correlation = document.getElementById("correlation").value.trim();
+
+            if (!arquivo && !correlation) {
+                alert("Preencha Arquivo OU CorrelationId");
+                return;
+            }
+
+            let dataFinal;
+
+            if (dataInput) {
+                dataFinal = formatarData(dataInput);
+                if (!dataFinal) {
+                    alert("Data inválida");
+                    return;
+                }
+            } else {
+                const hoje = new Date();
+                const dia = String(hoje.getDate()).padStart(2, '0');
+                const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+                const ano = hoje.getFullYear();
+
+                dataFinal = encodeURIComponent(`${dia}/${mes}/${ano}`);
+            }
+
+            let resultado = "";
+
+            for (let i = 1; i <= 5; i++) {
+                setTimeout(() => {
+                    let servidor = `fntaws00${i}`;
+
+                    let url = `http://${servidor}fmapi.finnet.corp/log/check_log.php?data=${dataFinal}&arquivo=${encodeURIComponent(arquivo)}&correlationId=${encodeURIComponent(correlation)}`;
+
+                    // abre a aba
+                    window.open(url, '_blank');
+
+                    // só pra exibir também
+                    resultado += url + "\n";
+                    document.getElementById("resultado").value = resultado;
+
+                }, i * 300); // delay evita bloqueio de popup
+            }
+        }
+
+        // captura todos os inputs
+        document.querySelectorAll("input").forEach(input => {
+
+            input.addEventListener("keypress", function (event) {
+
+                // verifica se apertou ENTER
+                if (event.key === "Enter") {
+                    event.preventDefault(); // evita comportamento padrão
+                    gerar(); // chama a função
+                }
+
+            });
+
+        });
+    </script>
+
+</body>
+
+</html>
