@@ -138,13 +138,16 @@ body {
 .tratativas {
     max-width: 1400px;
     margin: 40px auto;
+    
     /* Centraliza a aplicação na tela */
     padding: 0 20px;
 
     /* O Grid moderno permite colocar os botões em cima e as colunas lado a lado facilmente */
     display: grid;
-    grid-template-columns: 1fr 1fr;
     gap: 30px;
+
+    /* retire esse campo pois quero deixar mais bonito a visualização unica */
+    /* grid-template-columns: 1fr 1fr; */
 }
 
 /* ==========================================================================
