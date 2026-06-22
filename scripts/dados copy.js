@@ -1,7 +1,16 @@
 const tratativasCurtas = {
-    "1": "Sendo tratado no chamado:",
-    "2": "layout invalido para processamento",
-    "3": "desconsiderar arquivo"
+    "1": "arquivo invalido",
+    "2": "sem config cadastrada",
+    "3": "arquivo duplicado",
+    "4": "nomenclatura errada",
+    "5": "layout invalido",
+    "6": "arquivo processado",
+    "7": "continuar processamento",
+    "8": "reiniciar processamento",
+    "9": "chamado aberto",
+    "10": "necessario deploy",
+    "11": "arquivo deu carga",
+    "12": "desconsiderar arquivo"
 };
 
 const mensagensDesconsiderar = {
